@@ -1,7 +1,6 @@
 // Node.js - Express sample application
 
-var express = require('express')
-var app = express()
+var app = require('./app')
 
 app.get('/', function (req, res) {
   res.send('Hello World!')

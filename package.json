@@ -4,7 +4,9 @@
   "description": "application de listing",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/amaaune/TODO_APP_LISTIT/issues"
   },
-  "homepage": "https://github.com/amaaune/TODO_APP_LISTIT#readme"
+  "homepage": "https://github.com/amaaune/TODO_APP_LISTIT#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
