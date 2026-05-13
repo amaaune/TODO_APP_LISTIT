@@ -1,5 +1,7 @@
 # TODO App - ListIt
 
+Application de gestion de tâches (TODO) avec un backend Node.js/Express et un frontend HTML/CSS/JS vanilla. Permet d'ajouter et supprimer des tâches via une interface simple connectée à une API REST.
+=======
 Application web de gestion de listes (courses, taches, checklists). Elle dispose d'un backend Node.js/Express qui expose une API REST, et d'un frontend HTML/CSS/JS vanilla servi directement par le serveur.
 
 **Developpeurs :** Amaury & Benjamin
