@@ -56,6 +56,22 @@ main {
   font-size: 1rem;
 }
 
+.task-item.completed span {
+  text-decoration: line-through;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.task-item.completed {
+  background: #f0f0f0;
+  opacity: 0.7;
+}
+
+.task-item span {
+  cursor: pointer;
+  flex: 1;
+}
+
 #add-btn {
   padding: 10px 20px;
   background: #667eea;

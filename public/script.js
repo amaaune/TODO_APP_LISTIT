@@ -25,11 +25,17 @@ async function loadTodos() {
 function renderTasks(todos) {
   const list = document.getElementById('tasks');
   list.innerHTML = '';
-  todos.forEach(todo => {
+  
+  // Tâches actives en haut, complétées en bas
+  const sorted = [...todos].sort((a, b) => a.completed - b.completed);
+  
+  sorted.forEach(todo => {
     const li = document.createElement('li');
     li.className = 'task-item' + (todo.completed ? ' completed' : '');
     li.innerHTML = `
-      <span onclick="toggleTodo(${todo.id}, ${todo.completed})">${todo.title}</span>
+      <span onclick="toggleTodo(${todo.id}, ${todo.completed})">
+        ${todo.completed ? '☑' : '☐'} ${todo.title}
+      </span>
       <button class="delete-btn" onclick="deleteTodo(${todo.id})">Supprimer</button>
     `;
     list.appendChild(li);
