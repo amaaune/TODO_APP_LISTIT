@@ -16,6 +16,9 @@ app.get('/api/health', (req, res) => {
 const todosRouter = require('./routes/todos');
 app.use('/api/todos', todosRouter);
 
+const templatesRouter = require('./routes/templates');
+app.use('/api/templates', templatesRouter);
+
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found" });
 });

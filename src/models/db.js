@@ -28,6 +28,22 @@ async function initDatabase() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS templates (
+      id         SERIAL PRIMARY KEY,
+      name       VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS template_items (
+      id          SERIAL PRIMARY KEY,
+      template_id INTEGER REFERENCES templates(id) ON DELETE CASCADE,
+      title       VARCHAR(255) NOT NULL
+    )
+  `);
   console.log('Database initialized');
 }
 

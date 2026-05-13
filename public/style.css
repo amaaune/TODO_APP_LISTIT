@@ -90,6 +90,45 @@ main {
   border-bottom-color: #f0f0f0;
 }
 
+#templates-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+#save-template-btn {
+  padding: 8px 14px;
+  background: #764ba2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#save-template-btn:hover {
+  background: #667eea;
+}
+
+#templates-select {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+#delete-template-btn {
+  padding: 8px 14px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
 #add-btn {
   padding: 10px 20px;
   background: #667eea;

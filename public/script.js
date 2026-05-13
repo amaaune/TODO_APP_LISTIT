@@ -105,4 +105,64 @@ document.getElementById('todo-input').addEventListener('keypress', (e) => {
 window.addEventListener('load', () => {
   checkApiHealth();
   loadTodos();
+  loadTemplates();
 });
+
+// Charge la liste des modèles dans le select
+async function loadTemplates() {
+  try {
+    const res = await fetch('/api/templates');
+    const { data } = await res.json();
+    const select = document.getElementById('templates-select');
+    select.innerHTML = '<option value="">📂 Charger un modèle...</option>';
+    data.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      select.appendChild(opt);
+    });
+  } catch {
+    console.error('Impossible de charger les modèles');
+  }
+}
+
+async function saveTemplate() {
+  const name = prompt('Nom du modèle ? (ex: Liste courses, Séance sport)');
+  if (!name) return;
+  const res = await fetch('/api/todos');
+  const { data } = await res.json();
+  const items = data.filter(t => !t.completed).map(t => t.title);
+  if (items.length === 0) { alert('Aucune tâche à sauvegarder'); return; }
+  await fetch('/api/templates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, items }),
+  });
+  loadTemplates();
+}
+
+async function loadTemplate() {
+  const id = document.getElementById('templates-select').value;
+  if (!id) return;
+  const res = await fetch(`/api/templates/${id}`);
+  const { data } = await res.json();
+  for (const item of data.items) {
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: item.title }),
+    });
+  }
+  loadTodos();
+}
+
+async function deleteTemplate() {
+  const id = document.getElementById('templates-select').value;
+  if (!id) return;
+  await fetch(`/api/templates/${id}`, { method: 'DELETE' });
+  loadTemplates();
+}
+
+document.getElementById('save-template-btn').addEventListener('click', saveTemplate);
+document.getElementById('templates-select').addEventListener('change', loadTemplate);
+document.getElementById('delete-template-btn').addEventListener('click', deleteTemplate);
