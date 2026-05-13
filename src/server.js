@@ -1,9 +1,16 @@
-// Node.js - Express sample application
+const app = require('./app');
+const { initDatabase } = require('./models/db');
 
-var app = require('./app')
-
-var server = app.listen(process.env.PORT || 3000, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log('App listening at http://%s:%s', host, port)
-})
+// On initialise la BD avant de démarrer le serveur.
+// Si la BD est inaccessible, on coupe le process plutôt que de démarrer sans BD.
+initDatabase()
+  .then(() => {
+    const server = app.listen(process.env.PORT || 3000, () => {
+      const { address, port } = server.address();
+      console.log(`App listening at http://${address}:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Erreur BD :', err.message);
+    process.exit(1);
+  });
