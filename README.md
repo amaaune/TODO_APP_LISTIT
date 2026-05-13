@@ -182,3 +182,39 @@ git remote add scalingo git@ssh.osc-fr1.scalingo.com:listit.git
 # Déployer
 git push scalingo main
 ```
+
+---
+
+## 🚀 Mises à jour potentielles
+
+### 🧹 Gestion de la liste courante
+
+- **Bouton "Tout vider"** — supprime toutes les tâches de la liste d'un coup
+- **Bouton "Vider les réalisées"** — supprime uniquement les tâches cochées
+- **Protection chargement modèle** — détecter si la liste n'est pas vide et afficher une confirmation : "La liste contient des tâches, voulez-vous les remplacer ou les ajouter ?"
+
+### 📂 Gestion des modèles
+
+- **Empêcher les doublons** — si le modèle est déjà chargé, bloquer ou avertir
+- **Modifier un modèle** — renommer ou éditer les items d'un modèle existant
+- **Aperçu au survol** — voir les items d'un modèle avant de le charger
+
+### ✏️ Gestion des tâches
+
+- **Éditer une tâche** — double-clic sur le titre pour le modifier
+- **Réordonner** — drag & drop pour changer l'ordre des tâches
+- **Date d'échéance** — ajouter une deadline sur une tâche
+- **Priorité** — tag haute/moyenne/basse priorité
+
+### 👥 Multi-utilisateur (évolution majeure)
+
+- **Authentification** — login/password ou OAuth Google
+- **Listes partagées** — partager une liste avec quelqu'un
+- **Plusieurs listes** — avoir plusieurs listes simultanées (courses, sport, travail...)
+
+### 🎨 UI/UX
+
+- **Animations** — transition quand une tâche passe en "réalisée"
+- **Thème sombre** — implémenter un mode dark
+- **Version mobile** — améliorer le responsive
+- **Confirmation avant suppression** — éviter les suppressions accidentelles
