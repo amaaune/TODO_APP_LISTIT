@@ -1,78 +1,91 @@
-// 🔍 1. Vérifier que l'API est accessible
+// Verifie si l'API repond et affiche le statut
 async function checkApiHealth() {
+  const el = document.getElementById('api-status');
   try {
-    const response = await fetch('/api/health');
-    const data = await response.json();
-    
-    if (data.status === 'ok') {
-      document.getElementById('api-status').textContent = '✅ API connectée';
-      document.getElementById('api-status').style.color = 'green';
-    }
-  } catch (error) {
-    document.getElementById('api-status').textContent = '❌ API indisponible';
-    document.getElementById('api-status').style.color = 'red';
+    const res = await fetch('/api/health');
+    const data = await res.json();
+    el.textContent = data.status === 'ok' ? 'API connectee' : 'API erreur';
+  } catch {
+    el.textContent = 'API indisponible';
   }
 }
 
-// 📝 2. Afficher le statut de connexion
-function displayConnectionStatus(isConnected) {
-  const statusEl = document.getElementById('api-status');
-  if (isConnected) {
-    statusEl.textContent = '✅ Connecté';
-    statusEl.style.color = 'green';
-  } else {
-    statusEl.textContent = '❌ Déconnecté';
-    statusEl.style.color = 'red';
+// Recupere tous les todos depuis la BD et les affiche
+async function loadTodos() {
+  try {
+    const res = await fetch('/api/todos');
+    const { data } = await res.json();
+    renderTasks(data);
+  } catch {
+    console.error('Impossible de charger les taches');
   }
 }
 
-// ➕ 3. Ajouter une tâche en local (pas de BD)
-let tasks = []; // Stockage en mémoire
-
-function addTask() {
-  const input = document.getElementById('todo-input');
-  const taskText = input.value.trim();
-  
-  if (taskText === '') return;
-  
-  const task = {
-    id: Date.now(),
-    text: taskText,
-    completed: false
-  };
-  
-  tasks.push(task);
-  input.value = '';
-  renderTasks();
-}
-
-// 🎨 4. Afficher les tâches à l'écran
-function renderTasks() {
-  const tasksList = document.getElementById('tasks');
-  tasksList.innerHTML = '';
-  
-  tasks.forEach(task => {
+// Affiche la liste des todos dans le DOM
+function renderTasks(todos) {
+  const list = document.getElementById('tasks');
+  list.innerHTML = '';
+  todos.forEach(todo => {
     const li = document.createElement('li');
-    li.className = 'task-item';
+    li.className = 'task-item' + (todo.completed ? ' completed' : '');
     li.innerHTML = `
-      <span>${task.text}</span>
-      <button class="delete-btn" onclick="deleteTask(${task.id})">Supprimer</button>
+      <span onclick="toggleTodo(${todo.id}, ${todo.completed})">${todo.title}</span>
+      <button class="delete-btn" onclick="deleteTodo(${todo.id})">Supprimer</button>
     `;
-    tasksList.appendChild(li);
+    list.appendChild(li);
   });
 }
 
-// 🗑️ 5. Supprimer une tâche
-function deleteTask(id) {
-  tasks = tasks.filter(task => task.id !== id);
-  renderTasks();
+// Envoie un nouveau todo a l'API
+async function addTask() {
+  const input = document.getElementById('todo-input');
+  const title = input.value.trim();
+  if (!title) return;
+
+  try {
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+    input.value = '';
+    loadTodos(); // recharge la liste depuis la BD
+  } catch {
+    console.error('Impossible d\'ajouter la tache');
+  }
 }
 
-// 🎯 6. Event listeners
+// Inverse le statut completed d'un todo
+async function toggleTodo(id, currentCompleted) {
+  try {
+    await fetch(`/api/todos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: !currentCompleted }),
+    });
+    loadTodos();
+  } catch {
+    console.error('Impossible de mettre a jour la tache');
+  }
+}
+
+// Supprime un todo
+async function deleteTodo(id) {
+  try {
+    await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+    loadTodos();
+  } catch {
+    console.error('Impossible de supprimer la tache');
+  }
+}
+
 document.getElementById('add-btn').addEventListener('click', addTask);
 document.getElementById('todo-input').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') addTask();
 });
 
-// ✅ Vérifier l'API au chargement
-window.addEventListener('load', checkApiHealth);
+// Au chargement : verifie l'API et charge les todos existants
+window.addEventListener('load', () => {
+  checkApiHealth();
+  loadTodos();
+});
