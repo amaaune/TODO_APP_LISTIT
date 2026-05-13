@@ -14,7 +14,7 @@ Application web de gestion de listes (courses, taches, checklists). Elle dispose
 |--------|-------------|
 | Runtime | Node.js |
 | Framework backend | Express v5 |
-| Frontend | HTML, CSS, JavaScript   |
+| Frontend | HTML, CSS, JavaScript vanilla |
 | Variables d'environnement | dotenv |
 | Dev (hot reload) | Nodemon |
 
