@@ -1,10 +1,17 @@
 # TODO App - ListIt
 
-Application de gestion de tâches (TODO) avec un backend Node.js/Express et un frontend HTML/CSS/JS vanilla. Permet d'ajouter et supprimer des tâches via une interface simple connectée à une API REST.
-=======
-Application web de gestion de listes (courses, taches, checklists). Elle dispose d'un backend Node.js/Express qui expose une API REST, et d'un frontend HTML/CSS/JS vanilla servi directement par le serveur.
+Application web de gestion de tâches (courses, checklists, todos). Elle dispose d'un backend Node.js/Express qui expose une API REST, d'un frontend HTML/CSS/JS vanilla servi directement par le serveur, et d'une base de données PostgreSQL pour la persistance des données.
 
-**Developpeurs :** Amaury & Benjamin
+**Développeurs :** Amaury & Benjamin
+
+---
+
+## Fonctionnalités
+
+- Ajouter, cocher et supprimer des tâches
+- Les tâches cochées apparaissent dans une section "Réalisées" séparée
+- **Modèles de listes** : sauvegarder la liste actuelle comme modèle réutilisable, charger un modèle existant, supprimer un modèle
+- Persistance complète en base de données PostgreSQL (les données survivent aux redémarrages)
 
 ---
 
@@ -14,27 +21,97 @@ Application web de gestion de listes (courses, taches, checklists). Elle dispose
 |--------|-------------|
 | Runtime | Node.js |
 | Framework backend | Express v5 |
+| Base de données | PostgreSQL |
+| Driver DB | node-postgres (pg) |
 | Frontend | HTML, CSS, JavaScript vanilla |
 | Variables d'environnement | dotenv |
 | Dev (hot reload) | Nodemon |
 
 ---
 
+## Architecture du projet
+
+```
+TODO_APP_LISTIT/
+├── public/
+│   ├── index.html                  # Interface utilisateur
+│   ├── style.css                   # Styles
+│   └── script.js                   # Logique frontend (fetch API, DOM, modèles)
+├── src/
+│   ├── app.js                      # Configuration Express (middlewares, routes)
+│   ├── server.js                   # Démarrage du serveur + initialisation DB
+│   ├── routes/
+│   │   ├── todos.js                # Routes /api/todos
+│   │   └── templates.js            # Routes /api/templates
+│   ├── controllers/
+│   │   ├── todoController.js       # CRUD des tâches
+│   │   └── templateController.js  # CRUD des modèles
+│   └── models/
+│       └── db.js                   # Connexion PostgreSQL + init des tables
+├── tests/
+│   └── api.test.js                 # Tests automatisés de l'API
+├── .env                            # Variables d'environnement (non commité)
+├── .gitignore
+├── Procfile                        # Commande de démarrage pour Scalingo
+└── package.json
+```
+
+---
+
+## Schéma de la base de données
+
+```
+todos
+  id          SERIAL PRIMARY KEY
+  title       VARCHAR(255) NOT NULL
+  completed   BOOLEAN DEFAULT false
+  created_at  TIMESTAMP DEFAULT NOW()
+
+templates
+  id          SERIAL PRIMARY KEY
+  name        VARCHAR(255) NOT NULL
+  created_at  TIMESTAMP DEFAULT NOW()
+
+template_items
+  id           SERIAL PRIMARY KEY
+  template_id  INTEGER → templates(id) ON DELETE CASCADE
+  title        VARCHAR(255) NOT NULL
+```
+
+> Les trois tables sont créées automatiquement au premier démarrage du serveur.
+
+---
+
 ## Installation et lancement en local
+
+### Prérequis
+
+- Node.js installé
+- PostgreSQL installé et en cours d'exécution
+
+### Mise en place de la base de données locale
+
+```bash
+# Créer l'utilisateur et la base (une seule fois)
+sudo -u postgres createuser --superuser <votre-utilisateur>
+sudo -u postgres createdb listit_local -O <votre-utilisateur>
+sudo -u postgres psql -d listit_local -c "ALTER SCHEMA public OWNER TO <votre-utilisateur>;"
+```
+
+### Lancement
 
 ```bash
 # 1. Cloner le projet
 git clone https://github.com/amaaune/TODO_APP_LISTIT.git
 cd TODO_APP_LISTIT
 
-# 2. Installer les dependances
+# 2. Installer les dépendances
 npm install
 
-# 3. Creer le fichier d'environnement
-cp .env.example .env
-# Editer .env avec vos valeurs si necessaire
+# 3. Créer le fichier .env avec votre DATABASE_URL locale :
+# DATABASE_URL=postgres://<utilisateur>@localhost:5432/listit_local?host=/var/run/postgresql
 
-# 4. Lancer en mode developpement (avec hot reload)
+# 4. Lancer en mode développement (avec hot reload)
 npm run dev
 
 # 5. Ou lancer en mode production
@@ -45,12 +122,40 @@ L'application est disponible sur `http://localhost:3000`
 
 ---
 
-## Deploiements
+## Variables d'environnement
 
-| Environnement | URL | Declenchement |
-|---------------|-----|---------------|
-| Staging | https://listit.osc-fr1.scalingo.io | Push sur `main` vers `scalingo-staging` |
-| Production | A configurer | Tag `v*` |
+Le fichier `.env` n'est **pas commité** pour des raisons de sécurité (il contient le mot de passe de la base de données).
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | URL de connexion PostgreSQL |
+| `PORT` | Port du serveur (défaut : 3000) |
+
+En production sur Scalingo, `DATABASE_URL` est injectée automatiquement par la plateforme.
+
+---
+
+## Routes API
+
+### Tâches
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/health` | Statut et uptime de l'API |
+| GET | `/api/todos` | Récupérer toutes les tâches |
+| GET | `/api/todos/:id` | Récupérer une tâche par son id |
+| POST | `/api/todos` | Créer une tâche `{ title }` |
+| PUT | `/api/todos/:id` | Modifier une tâche `{ title?, completed? }` |
+| DELETE | `/api/todos/:id` | Supprimer une tâche |
+
+### Modèles
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/templates` | Récupérer tous les modèles |
+| GET | `/api/templates/:id` | Récupérer un modèle avec ses tâches |
+| POST | `/api/templates` | Créer un modèle `{ name, items: [title] }` |
+| DELETE | `/api/templates/:id` | Supprimer un modèle et ses tâches |
 
 ---
 
@@ -58,46 +163,22 @@ L'application est disponible sur `http://localhost:3000`
 
 | Commande | Description |
 |----------|-------------|
-| `npm run dev` | Demarre le serveur avec rechargement automatique |
-| `npm start` | Demarre le serveur en production |
-| `npm test` | Lance les tests automatises |
+| `npm run dev` | Démarre le serveur avec rechargement automatique |
+| `npm start` | Démarre le serveur en production |
+| `npm test` | Lance les tests automatisés |
 
 ---
 
-## Routes API disponibles
+## Déploiement
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | `/` | Sert la page frontend (`public/index.html`) |
-| GET | `/api/health` | Retourne le statut et l'uptime de l'API |
-
----
-
-## Structure du projet
-
-```
-TODO_APP_LISTIT/
-├── public/
-│   ├── index.html      # Interface utilisateur
-│   ├── style.css       # Styles
-│   └── script.js       # Logique frontend (fetch API, DOM)
-├── src/
-│   ├── app.js          # Configuration Express (middlewares, routes)
-│   └── server.js       # Demarrage du serveur
-├── .env                # Variables d'environnement (non commite)
-├── .gitignore
-├── Procfile            # Commande de demarrage pour Scalingo
-└── package.json
-```
-
----
-
-## Deployer sur Scalingo
+| Environnement | URL |
+|---------------|-----|
+| Production | https://listit.osc-fr1.scalingo.io |
 
 ```bash
-# Ajouter la remote staging (une seule fois)
-git remote add scalingo-staging git@ssh.osc-fr1.scalingo.com:listit.git
+# Ajouter la remote Scalingo (une seule fois)
+git remote add scalingo git@ssh.osc-fr1.scalingo.com:listit.git
 
-# Pousser la branche courante vers staging
-git push scalingo-staging ben:main
+# Déployer
+git push scalingo main
 ```
