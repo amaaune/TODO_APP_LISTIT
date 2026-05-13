@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -16,6 +17,10 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
+
+//Routes API
+const todosRouter = require('./routes/todos');
+app.use('/api/todos', todosRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found" });
