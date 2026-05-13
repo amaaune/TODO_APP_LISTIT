@@ -56,6 +56,40 @@ main {
   font-size: 1rem;
 }
 
+.task-item.completed span {
+  text-decoration: line-through;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.task-item.completed {
+  background: #f0f0f0;
+  opacity: 0.7;
+}
+
+.task-item span {
+  cursor: pointer;
+  flex: 1;
+}
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #888;
+  padding: 10px 0 5px 0;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 5px;
+  list-style: none;
+  display: block;
+}
+
+.done-title {
+  margin-top: 15px;
+  color: #aaa;
+  border-bottom-color: #f0f0f0;
+}
+
 #add-btn {
   padding: 10px 20px;
   background: #667eea;

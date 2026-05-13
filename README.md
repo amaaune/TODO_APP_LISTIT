@@ -12,9 +12,7 @@ Application web de gestion de tâches (courses, checklists, todos). Elle dispose
 |--------|-------------|
 | Runtime | Node.js |
 | Framework backend | Express v5 |
-| Base de données | PostgreSQL |
-| Driver DB | node-postgres (pg) |
-| Frontend | HTML, CSS, JavaScript |
+| Frontend | HTML, CSS, JavaScript vanilla |
 | Variables d'environnement | dotenv |
 | Dev (hot reload) | Nodemon |
 
