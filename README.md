@@ -173,7 +173,7 @@ En production sur Scalingo, `DATABASE_URL` est injectée automatiquement par la 
 
 | Environnement | URL |
 |---------------|-----|
-| Staging    | https://listit.osc-fr1.scalingo.io |
+| Production    | https://listit.osc-fr1.scalingo.io |
 
 ```bash
 # Ajouter la remote Scalingo (une seule fois)
