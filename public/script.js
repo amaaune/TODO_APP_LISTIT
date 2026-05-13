@@ -22,24 +22,35 @@ async function loadTodos() {
 }
 
 // Affiche la liste des todos dans le DOM
+// Affiche la liste des todos dans le DOM
 function renderTasks(todos) {
   const list = document.getElementById('tasks');
   list.innerHTML = '';
-  
-  // Tâches actives en haut, complétées en bas
-  const sorted = [...todos].sort((a, b) => a.completed - b.completed);
-  
-  sorted.forEach(todo => {
-    const li = document.createElement('li');
-    li.className = 'task-item' + (todo.completed ? ' completed' : '');
-    li.innerHTML = `
-      <span onclick="toggleTodo(${todo.id}, ${todo.completed})">
-        ${todo.completed ? '☑' : '☐'} ${todo.title}
-      </span>
-      <button class="delete-btn" onclick="deleteTodo(${todo.id})">Supprimer</button>
-    `;
-    list.appendChild(li);
-  });
+
+  const active = todos.filter(t => !t.completed);
+  const done = todos.filter(t => t.completed);
+
+  if (active.length > 0) {
+    list.innerHTML += `<li class="section-title">📋 À faire (${active.length})</li>`;
+    active.forEach(todo => list.appendChild(createTaskItem(todo)));
+  }
+
+  if (done.length > 0) {
+    list.innerHTML += `<li class="section-title done-title">✅ Réalisées (${done.length})</li>`;
+    done.forEach(todo => list.appendChild(createTaskItem(todo)));
+  }
+}
+
+function createTaskItem(todo) {
+  const li = document.createElement('li');
+  li.className = 'task-item' + (todo.completed ? ' completed' : '');
+  li.innerHTML = `
+    <span onclick="toggleTodo(${todo.id}, ${todo.completed})">
+      ${todo.completed ? '☑' : '☐'} ${todo.title}
+    </span>
+    <button class="delete-btn" onclick="deleteTodo(${todo.id})">Supprimer</button>
+  `;
+  return li;
 }
 
 // Envoie un nouveau todo a l'API
